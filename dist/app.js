@@ -67,7 +67,14 @@
     return lines.slice(1).map((line) => {
       const cols = line.split(delimiter);
       const get = (key) => index[key] >= 0 ? numberOrText(cols[index[key]]) : '';
-      return { year: get('year'), term: get('term'), code: get('code'), name: get('name'), nature: get('nature'), category: get('category'), credits: numeric(get('credits')) || 0, score: get('score'), labScore: get('labScore') };
+      let score = get('score');
+      // Some clipboard providers compress consecutive empty cells. If the score cell is empty,
+      // use the last non-empty field on that row as a safe fallback for common grade-table layouts.
+      if (score === '') {
+        const nonEmpty = cols.map(clean).filter(Boolean);
+        if (nonEmpty.length) score = numberOrText(nonEmpty[nonEmpty.length - 1]);
+      }
+      return { year: get('year'), term: get('term'), code: get('code'), name: get('name'), nature: get('nature'), category: get('category'), credits: numeric(get('credits')) || 0, score, labScore: get('labScore') };
     }).filter((course) => course.name || course.credits || course.score);
   }
 
