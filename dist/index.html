@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="沈阳化工大学化学工程学院保研估分器第一版">
+  <title>化工推免估分器 · 沈阳化工大学</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">CH</div>
+    <div class="brand-copy">
+      <span class="eyebrow">SHENYANG UNIVERSITY OF CHEMICAL TECHNOLOGY</span>
+      <strong>化工推免估分器</strong>
+    </div>
+    <span class="version-pill">第一版 · 化学工程学院</span>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="kicker">把成绩单变成一张可解释的推免画像</p>
+        <h1>先算清自己的分，再看自己处在哪个区间。</h1>
+        <p class="hero-copy">支持从教务系统复制表格、上传成绩单照片或手动录入。所有折算过程都会在表格中展开，方便你核对课程范围、实践课和“通过”成绩。</p>
+      </div>
+      <div class="hero-note">
+        <span class="note-dot"></span>
+        <div>
+          <strong>当前规则模板</strong>
+          <span>必修 + 必修实践环节 · 学分加权 · “通过”按 75 分</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="profile-strip panel">
+      <div class="profile-title">
+        <span class="section-index">01</span>
+        <div><strong>先确认你的样本标签</strong><span>排名只在同学校、同专业、同年级、同规则内比较</span></div>
+      </div>
+      <label>专业<input id="majorInput" value="化学工程与工艺" autocomplete="off"></label>
+      <label>年级<select id="gradeInput"><option>2026届</option><option>2027届</option><option>2028届</option><option>其他</option></select></label>
+      <label>综合能力成绩（可选）<input id="comprehensiveInput" inputmode="decimal" placeholder="例如 88.5"></label>
+    </section>
+
+    <section class="workspace-grid">
+      <div class="panel import-panel">
+        <div class="panel-heading">
+          <div><span class="section-index">02</span><h2>导入成绩</h2></div>
+          <span class="muted">数据默认只留在当前浏览器</span>
+        </div>
+        <div class="import-tabs" role="tablist">
+          <button class="tab-button active" data-tab="paste" role="tab">复制粘贴</button>
+          <button class="tab-button" data-tab="photo" role="tab">成绩单照片</button>
+          <button class="tab-button" data-tab="manual" role="tab">手动新增</button>
+        </div>
+        <div class="tab-panel active" data-panel="paste">
+          <label class="field-label" for="pasteInput">把教务系统表格直接粘贴到这里</label>
+          <textarea id="pasteInput" rows="9" placeholder="支持制表符分隔的成绩表。至少包含：课程名称、课程性质、学分、成绩。\n\n示例：\n学年\t学期\t课程名称\t课程性质\t课程归属\t学分\t实验成绩\t成绩\n2025-2026\t1\t化工原理Ⅱ\t必修\t\t3\t\t97"></textarea>
+          <div class="button-row">
+            <button id="parsePasteButton" class="primary-button">解析并计算</button>
+            <button id="loadDemoButton" class="ghost-button">加载示例</button>
+            <button id="clearButton" class="text-button">清空</button>
+          </div>
+        </div>
+        <div class="tab-panel" data-panel="photo">
+          <label class="upload-drop" for="photoInput">
+            <span class="upload-icon">↑</span>
+            <strong>选择成绩单照片</strong>
+            <span>图片会在浏览器中 OCR，识别后请核对表格</span>
+            <input id="photoInput" type="file" accept="image/*">
+          </label>
+          <div class="progress-line"><span id="ocrProgressBar"></span></div>
+          <p id="ocrStatus" class="helper-text">OCR 适合清晰的成绩单截图，复杂表格建议使用复制粘贴。</p>
+        </div>
+        <div class="tab-panel" data-panel="manual">
+          <div class="manual-grid">
+            <label>课程名称<input id="manualName" placeholder="例如 化工原理Ⅱ"></label>
+            <label>课程性质<select id="manualNature"><option>必修</option><option>实践</option><option>实践环节</option><option>课外实践</option><option>选修</option></select></label>
+            <label>课程归属<input id="manualCategory" placeholder="可留空"></label>
+            <label>学分<input id="manualCredits" inputmode="decimal" placeholder="3"></label>
+            <label>原始成绩<input id="manualScore" placeholder="97 / 优秀 / 通过"></label>
+            <label>实验成绩<input id="manualLabScore" placeholder="可留空"></label>
+            <label>学年<input id="manualYear" value="2025-2026"></label>
+            <label>学期<select id="manualTerm"><option>1</option><option>2</option></select></label>
+          </div>
+          <button id="addManualButton" class="primary-button">加入课程表</button>
+        </div>
+        <div id="importStatus" class="status-line" role="status"></div>
+      </div>
+
+      <aside class="panel rules-panel">
+        <div class="panel-heading"><div><span class="section-index">03</span><h2>当前计算规则</h2></div></div>
+        <div class="rule-list">
+          <div><span>计入课程</span><strong>必修、实践、实践环节</strong></div>
+          <div><span>课外实践</span><strong>仅非选修归属计入</strong></div>
+          <div><span>优秀 / 良好 / 中等</span><strong>95 / 85 / 75</strong></div>
+          <div><span>通过</span><strong>75（可修改）</strong></div>
+          <div><span>学分加权</span><strong>Σ(学分 × 折算成绩) ÷ Σ学分</strong></div>
+        </div>
+        <p class="rule-footnote">“专业选修课”类课外实践默认不计入。你可以在下方表格中逐行查看系统的判断。</p>
+      </aside>
+    </section>
+
+    <section class="score-grid">
+      <div class="metric-card accent-card"><span>学分加权平均分</span><strong id="weightedScore">—</strong><small id="creditSummary">尚未导入课程</small></div>
+      <div class="metric-card"><span>综合能力成绩</span><strong id="comprehensiveScore">—</strong><small>输入后按 90% / 10% 合成</small></div>
+      <div class="metric-card"><span>推免估算总分</span><strong id="totalScore">—</strong><small>仅在填写综合能力成绩后显示</small></div>
+      <div class="metric-card"><span>样本内估计排名</span><strong id="rankScore">—</strong><small id="rankSummary">等待匿名样本</small></div>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="panel-heading table-heading">
+        <div><span class="section-index">04</span><h2>逐门课程核对</h2></div>
+        <div class="table-actions"><button id="exportCoursesButton" class="ghost-button">导出课程 CSV</button><span id="courseCount" class="muted">0 门课程</span></div>
+      </div>
+      <div class="table-wrap">
+        <table id="courseTable">
+          <thead><tr><th>学期</th><th>课程名称</th><th>性质</th><th>学分</th><th>原始成绩</th><th>折算成绩</th><th>计入</th><th>说明</th></tr></thead>
+          <tbody><tr class="empty-row"><td colspan="8">导入成绩后，这里会展示每门课程的计算依据。</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="lower-grid">
+      <div class="panel sample-panel">
+        <div class="panel-heading"><div><span class="section-index">05</span><h2>匿名样本与排名估计</h2></div><span class="muted">当前浏览器样本池</span></div>
+        <p class="panel-copy">排名必须使用同一规则、同一专业和同一年级的数据。第一版支持导入你整理的匿名历史数据，也可以把自己的结果加入本机样本池。</p>
+        <div class="button-row">
+          <label class="file-button ghost-button" for="sampleFile">导入匿名样本<input id="sampleFile" type="file" accept=".csv,.tsv,.txt"></label>
+          <button id="addSampleButton" class="primary-button">加入当前结果</button>
+          <button id="exportSampleButton" class="ghost-button">导出样本</button>
+        </div>
+        <div id="sampleStatus" class="status-line"></div>
+      </div>
+      <div class="panel privacy-panel">
+        <div class="panel-heading"><div><span class="section-index">06</span><h2>数据边界</h2></div></div>
+        <ul class="privacy-list">
+          <li>成绩计算在浏览器中完成，默认不会上传成绩单。</li>
+          <li>公开排名前必须去除姓名、学号和联系方式。</li>
+          <li>样本越少，排名越只能作为区间参考。</li>
+          <li>正式推免以学校当年通知和教务审核口径为准。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><span>化工推免估分器 · 沈阳化工大学化学工程学院第一版</span><span>规则可配置 · 数据可导出 · 结果可解释</span></footer>
+</body>
+</html>
