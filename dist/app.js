@@ -8,7 +8,11 @@
 
   function clean(value) { return String(value ?? '').replace(/^\uFEFF/, '').trim(); }
   function numberOrText(value) { const v = clean(value); if (!v) return ''; const n = Number(v); return Number.isFinite(n) ? n : v; }
-  function numeric(value) { const n = Number(value); return Number.isFinite(n) ? n : null; }
+  function numeric(value) {
+    if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  }
   function isIncluded(course) {
     const nature = clean(course.nature);
     const category = clean(course.category);
