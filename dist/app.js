@@ -53,18 +53,59 @@
   }
   function semester(course) { return [clean(course.year), clean(course.term)].filter(Boolean).join('-') || '未填写'; }
 
+  function detectDelimiter(line) {
+    if (line.includes('\t')) return '\t';
+    if (line.includes(',')) return ',';
+    return null;
+  }
+  function splitColumns(line, delimiter = detectDelimiter(line)) {
+    return (delimiter ? line.split(delimiter) : line.trim().split(/\s{2,}/)).map(clean);
+  }
+  function isCourseRow(line) { return /^\d{4}-\d{4}(?:\t|,|\s{2,})/.test(line.trim()); }
+
   function parseDelimited(text) {
     const lines = clean(text).split(/\r?\n/).filter((line) => line.trim());
     if (!lines.length) return [];
-    const delimiter = lines[0].includes('\t') ? '\t' : (lines[0].includes(',') ? ',' : null);
-    if (!delimiter) throw new Error('没有识别到制表符或逗号分隔。请直接从教务系统复制表格。');
-    const rawHeaders = lines[0].split(delimiter).map(clean);
-    const looksLikeHeader = rawHeaders.some((header) => ['课程名称', '课程代码', '课程性质', '学分', '成绩'].includes(header));
-    // 教务系统常见的复制结果没有表头，但列顺序固定为：
-    // 学年、学期、课程代码、课程名称、课程性质、课程归属、学分、绩点、平时、期中、期末、实验成绩、成绩……
-    if (delimiter === '\t' && !looksLikeHeader && rawHeaders.length >= 13 && /^\d{4}-\d{4}$/.test(rawHeaders[0])) {
-      return lines.map((line) => {
-        const cols = line.split('\t');
+    const aliases = {
+      year: ['学年', '年份', '年级'], term: ['学期', '学期号'], code: ['课程代码', '课程编号', '代码'],
+      name: ['课程名称', '课程名', '科目'], nature: ['课程性质', '性质'], category: ['课程归属', '课程类别', '归属'],
+      credits: ['学分', '学分数', '学分值'], score: ['成绩', '总评成绩', '最终成绩'], labScore: ['实验成绩', '实验分', '实验'],
+    };
+    const headerIndex = lines.findIndex((line) => {
+      const parts = splitColumns(line);
+      const hits = ['课程名称', '课程代码', '课程性质', '课程归属', '学分', '成绩'].filter((name) => parts.some((part) => part === name || part.includes(name)));
+      return hits.length >= 3;
+    });
+    const parseRowsWithHeader = (headerLine, dataLines) => {
+      const delimiter = detectDelimiter(headerLine);
+      const rawHeaders = splitColumns(headerLine, delimiter);
+      const findIndex = (names) => {
+        const exactIndex = rawHeaders.findIndex((header) => names.includes(header));
+        return exactIndex >= 0 ? exactIndex : rawHeaders.findIndex((header) => names.some((name) => header.includes(name)));
+      };
+      const index = Object.fromEntries(Object.entries(aliases).map(([key, names]) => [key, findIndex(names)]));
+      if (index.name < 0 || index.credits < 0 || index.score < 0) throw new Error('至少需要课程名称、学分和成绩三列。');
+      return dataLines.filter(isCourseRow).map((line) => {
+        const cols = splitColumns(line, delimiter);
+        const get = (key) => index[key] >= 0 ? numberOrText(cols[index[key]]) : '';
+        let score = get('score');
+        if (score === '') {
+          const lab = get('labScore');
+          const fallback = cols.slice(Math.max(index.credits, 0)).reverse().find((value) => numeric(value) !== null || mapLabel(value) !== null);
+          score = lab || fallback || '';
+        }
+        return { year: get('year'), term: get('term'), code: get('code'), name: get('name'), nature: get('nature'), category: get('category'), credits: numeric(get('credits')) || 0, score, labScore: get('labScore') };
+      }).filter((course) => course.name || course.credits || course.score);
+    };
+    if (headerIndex >= 0) return parseRowsWithHeader(lines[headerIndex], lines.slice(headerIndex + 1));
+
+    // 无表头的教务系统复制结果：从任意位置找到“学年-学期”开头的固定列数据。
+    const dataStart = lines.findIndex(isCourseRow);
+    if (dataStart >= 0) {
+      const delimiter = detectDelimiter(lines[dataStart]);
+      if (!delimiter) throw new Error('已找到课程行，但没有识别到列分隔符。请直接从教务系统复制表格。');
+      return lines.slice(dataStart).filter(isCourseRow).map((line) => {
+        const cols = splitColumns(line, delimiter);
         return {
           year: numberOrText(cols[0]), term: numberOrText(cols[1]), code: numberOrText(cols[2]), name: clean(cols[3]),
           nature: clean(cols[4]), category: clean(cols[5]), credits: numeric(cols[6]) || 0,
@@ -72,26 +113,7 @@
         };
       }).filter((course) => course.name || course.credits || course.score);
     }
-    const aliases = {
-      year: ['学年', '年份', '年级'], term: ['学期', '学期号'], code: ['课程代码', '课程编号', '代码'],
-      name: ['课程名称', '课程名', '科目'], nature: ['课程性质', '性质'], category: ['课程归属', '课程类别', '归属'],
-      credits: ['学分', '学分数', '学分值'], score: ['成绩', '总评成绩', '最终成绩'], labScore: ['实验成绩', '实验分', '实验'],
-    };
-    const findIndex = (names) => rawHeaders.findIndex((header) => names.some((name) => header === name || header.includes(name)));
-    const index = Object.fromEntries(Object.entries(aliases).map(([key, names]) => [key, findIndex(names)]));
-    if (index.name < 0 || index.credits < 0 || index.score < 0) throw new Error('至少需要课程名称、学分和成绩三列。');
-    return lines.slice(1).map((line) => {
-      const cols = line.split(delimiter);
-      const get = (key) => index[key] >= 0 ? numberOrText(cols[index[key]]) : '';
-      let score = get('score');
-      // Some clipboard providers compress consecutive empty cells. If the score cell is empty,
-      // use the last non-empty field on that row as a safe fallback for common grade-table layouts.
-      if (score === '') {
-        const nonEmpty = cols.map(clean).filter(Boolean);
-        if (nonEmpty.length) score = numberOrText(nonEmpty[nonEmpty.length - 1]);
-      }
-      return { year: get('year'), term: get('term'), code: get('code'), name: get('name'), nature: get('nature'), category: get('category'), credits: numeric(get('credits')) || 0, score, labScore: get('labScore') };
-    }).filter((course) => course.name || course.credits || course.score);
+    throw new Error('没有找到课程表。请粘贴包含“课程名称、课程性质、学分、成绩”的表格。');
   }
 
   function demoCourses() {
