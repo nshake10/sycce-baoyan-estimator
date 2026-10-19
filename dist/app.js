@@ -3,7 +3,8 @@
 
   const RULES = { excellent: 95, good: 85, medium: 75, pass: 75 };
   const INCLUDED_NATURES = new Set(['必修', '实践', '实践环节']);
-  const REFERENCE_SCORES = [88.81,87.48,87.08,85.33,84.47,84.33,82.95,82.90,82.79,82.72,81.86,81.69,81.66,81.44,81.25,81.07,80.83,80.77,80.76,80.58,80.49,80.47,80.40,80.18,80.03,79.99,79.67,79.55,79.53,79.37,79.33,79.10,79.07,78.90,78.80,78.73,78.67,78.59,78.57,78.56,78.54,78.53,78.41,78.40,78.38,78.24];
+  const REFERENCE_SCORES = [95.01,93.2,92.98,92.81,90.19,92.48,91.28,91.22,90.77,90.35,89.84,90.43,89.84,88.93,89.39,89.52,87.26,89.41,88.73,89.09,86.32,89.08,89,88.75,88.26,88.66,88.41,88.39,88.03,87.86,87.81,87.89,87.86,87.55,87.55,87.37,87.41,87.32,87.19,86.95,87.15,87.25,86.23,87,86.98,86.82];
+  const EXTERNAL_COUNT = 37;
   const state = { courses: [], samples: loadSamples(), rules: { ...RULES } };
   const $ = (id) => document.getElementById(id);
 
@@ -137,17 +138,30 @@
       });
     }
     renderRank(result);
-    renderReference();
+    renderReference(result);
   }
 
-  function renderReference() {
+  function renderReference(result) {
     const scores = REFERENCE_SCORES;
-    const middle = (scores[(scores.length / 2) - 1] + scores[scores.length / 2]) / 2;
+    const sorted = [...scores].sort((a, b) => b - a);
+    const externalScores = scores.slice(0, EXTERNAL_COUNT);
+    const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
     $('referenceCount').textContent = String(scores.length);
-    $('referenceMax').textContent = scores[0].toFixed(2);
-    $('referenceTop10').textContent = scores[9].toFixed(2);
-    $('referenceMedian').textContent = middle.toFixed(2);
-    $('referenceMin').textContent = scores[scores.length - 1].toFixed(2);
+    $('referenceExternal').textContent = String(EXTERNAL_COUNT);
+    $('referenceRate').textContent = `${(EXTERNAL_COUNT / scores.length * 100).toFixed(1)}%`;
+    $('referenceMean').textContent = mean.toFixed(2);
+    $('referenceExternalMin').textContent = Math.min(...externalScores).toFixed(2);
+    const referenceRank = result.average === null ? null : 1 + sorted.filter((score) => score > result.average).length;
+    if (referenceRank === null) {
+      $('referenceRank').textContent = '导入成绩后显示全院参考位置';
+      $('referenceRankSummary').textContent = '按当前成绩口径与全院样本比较';
+    } else if (referenceRank > scores.length) {
+      $('referenceRank').textContent = `低于本批样本区间`;
+      $('referenceRankSummary').textContent = `样本最低分 ${sorted[sorted.length - 1].toFixed(2)}`;
+    } else {
+      $('referenceRank').textContent = `约第 ${referenceRank} / ${scores.length}`;
+      $('referenceRankSummary').textContent = `样本内位置 · 仅供参考`;
+    }
   }
 
   function renderRank(result) {

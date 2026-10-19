@@ -25,7 +25,7 @@
       <div>
         <p class="kicker">沈阳化工大学化学工程学院 · 保研估分工具</p>
         <h1>导入成绩单，马上看清自己的推免分数。</h1>
-        <p class="hero-copy">复制教务系统成绩、上传照片或手动录入，系统会自动完成课程筛选、实践成绩折算和学分加权。</p>
+        <p class="hero-copy">粘贴成绩单或上传照片，自动筛选计入课程并计算学分加权分。</p>
       </div>
       <div class="hero-note service-note">
         <span class="note-dot"></span>
@@ -51,7 +51,7 @@
       <div class="panel import-panel">
         <div class="panel-heading">
           <div><span class="section-index">02</span><h2>导入成绩</h2></div>
-          <span class="muted">复制、拍照、手动输入都可以</span>
+          <span class="muted">复制粘贴最快</span>
         </div>
         <div class="import-tabs" role="tablist">
           <button class="tab-button active" data-tab="paste" role="tab">复制粘贴</button>
@@ -101,7 +101,7 @@
           <div><span>优秀 / 良好 / 中等</span><strong>95 / 85 / 75</strong></div>
           <div><span>通过</span><strong>75（可修改）</strong></div>
         </div>
-        <p class="rule-footnote">专业选修课实践默认排除，具体结果会在课程表中逐行标注。</p>
+        <p class="rule-footnote">每门课程是否计入，会在下方课程表中标明。</p>
       </aside>
     </section>
 
@@ -115,16 +115,16 @@
     <section class="panel reference-panel">
       <div class="reference-intro">
         <span class="section-index">04</span>
-        <div><h2>本年度学院参考分布</h2><p>你提供的 46 个保研成绩样本，暂未按专业拆分。</p></div>
+        <div><h2>今年全院成绩参考</h2><p>46 条全院样本，其中前 37 条标记为外校保研。</p></div>
       </div>
       <div class="reference-metrics">
         <div><span>样本数</span><strong id="referenceCount">46</strong></div>
-        <div><span>最高分</span><strong id="referenceMax">88.81</strong></div>
-        <div><span>第 10 名</span><strong id="referenceTop10">82.72</strong></div>
-        <div><span>中位数</span><strong id="referenceMedian">80.29</strong></div>
-        <div><span>最后一名</span><strong id="referenceMin">78.24</strong></div>
+        <div><span>外校保研</span><strong id="referenceExternal">37</strong></div>
+        <div><span>外校占比</span><strong id="referenceRate">80.4%</strong></div>
+        <div><span>全院均值</span><strong id="referenceMean">88.95</strong></div>
+        <div><span>外校样本最低</span><strong id="referenceExternalMin">86.32</strong></div>
       </div>
-      <div class="reference-note">这组数据适合判断学院整体竞争区间；要估计某个专业的排名，还需要继续收集带专业标签的样本。</div>
+      <div class="reference-note"><strong id="referenceRank">导入成绩后显示全院参考位置</strong><span id="referenceRankSummary">按当前成绩口径与全院样本比较</span><span>专业排名还需要继续收集带专业、年级标签的匿名样本。</span></div>
     </section>
 
     <section class="panel table-panel">
@@ -143,7 +143,7 @@
     <section class="lower-grid">
       <div class="panel sample-panel">
         <div class="panel-heading"><div><span class="section-index">06</span><h2>排名参考</h2></div><span class="muted">同专业、同年级</span></div>
-        <p class="panel-copy">导入匿名历史样本，或把当前结果加入样本池，查看自己的相对位置。</p>
+        <p class="panel-copy">导入同专业、同年级样本，查看更接近真实的相对位置。</p>
         <div class="button-row">
           <label class="file-button ghost-button" for="sampleFile">导入匿名样本<input id="sampleFile" type="file" accept=".csv,.tsv,.txt"></label>
           <button id="addSampleButton" class="primary-button">加入当前结果</button>
@@ -152,9 +152,9 @@
         <div id="sampleStatus" class="status-line"></div>
       </div>
       <div class="panel service-panel">
-        <span class="service-badge">需要更具体的规划？</span>
-        <h2 class="service-title">从估分到准备，给你一条清晰路线。</h2>
-        <p class="service-copy">保研规划、保研信息、期末指导、竞赛指导，欢迎联系。</p>
+        <span class="service-badge">保研服务</span>
+        <h2 class="service-title">规划、信息、期末与竞赛指导</h2>
+        <p class="service-copy">需要进一步规划，欢迎添加微信。</p>
         <div class="wechat-chip">微信：<strong>DT_EC9</strong></div>
       </div>
     </section>
