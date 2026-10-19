@@ -15,7 +15,7 @@
     const n = Number(value);
     return Number.isFinite(n) ? n : null;
   }
-  function formatScore(value) { return (Math.round((Number(value) + Number.EPSILON) * 100) / 100).toFixed(2); }
+  function formatScore(value) { return (Math.round((Number(value) + 1e-8) * 100) / 100).toFixed(2); }
   function isIncluded(course) {
     const nature = clean(course.nature);
     const category = clean(course.category);
