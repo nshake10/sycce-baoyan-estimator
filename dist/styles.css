@@ -39,6 +39,7 @@ h1 { max-width: 710px; margin: 0; font-size: clamp(31px, 4.7vw, 52px); line-heig
 .hero-note strong, .hero-note span { display: block; }
 .hero-note strong { color: var(--blue-strong); font-size: 13px; }
 .hero-note span:last-child { margin-top: 5px; color: var(--muted); line-height: 1.55; font-size: 11px; }
+.service-note b { display: inline-block; margin-top: 12px; padding: 5px 9px; color: #8a5a12; border-radius: 7px; background: var(--gold-soft); font-size: 12px; letter-spacing: .02em; }
 .note-dot { width: 10px; height: 10px; margin-top: 4px; flex: 0 0 auto; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 5px var(--gold-soft); }
 
 .panel { padding: 21px; background: rgba(255,255,255,.96); border: 1px solid var(--line); border-radius: 19px; box-shadow: 0 12px 30px rgba(30, 60, 90, .055); }
@@ -114,6 +115,11 @@ tr.excluded td:nth-child(7) { color: var(--red); }
 .file-button { display: inline-flex !important; align-items: center; justify-content: center; }
 .file-button input { display: none; }
 .privacy-list { display: grid; gap: 8px; margin: 0; padding-left: 18px; color: var(--muted); font-size: 10px; line-height: 1.65; }
+.service-panel { display: flex; flex-direction: column; justify-content: center; min-height: 168px; background: linear-gradient(145deg, #f1fbff, #fff9ed); border-color: #c8ddeb; }
+.service-badge { width: fit-content; padding: 4px 8px; color: var(--blue-strong); border-radius: 999px; background: var(--blue-soft); font-size: 10px; font-weight: 800; }
+.service-title { max-width: 340px; margin: 11px 0 4px; color: var(--navy); font-size: 20px; line-height: 1.25; letter-spacing: -.03em; }
+.service-copy { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
+.wechat-chip { width: fit-content; margin-top: 13px; padding: 7px 11px; color: #7a5214; border: 1px solid #f0d49f; border-radius: 9px; background: var(--gold-soft); font-size: 11px; }
 .footer { width: min(1180px, calc(100% - 34px)); margin: 0 auto; padding: 19px 0 27px; display: flex; justify-content: space-between; gap: 20px; color: #8190a1; font-size: 9px; border-top: 1px solid var(--line); }
 @media (max-width: 900px) {
   .hero { display: block; }
