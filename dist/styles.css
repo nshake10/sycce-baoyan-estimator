@@ -97,6 +97,15 @@ input:focus, select:focus, textarea:focus { border-color: var(--cyan); backgroun
 .metric-card small { color: var(--muted); font-size: 9px; line-height: 1.4; }
 .accent-card { border-color: #b4d9e8; background: linear-gradient(145deg, #edf9fd, #fff); }
 .accent-card strong { color: var(--blue-strong); }
+.reference-panel { display: grid; grid-template-columns: 1.1fr 2fr; gap: 20px; align-items: center; margin: 16px 0; padding: 18px 20px; border-color: #c8ddeb; background: linear-gradient(100deg, #f8fcff, #fffaf1); }
+.reference-intro { display: flex; align-items: flex-start; gap: 10px; }
+.reference-intro h2 { margin: 0; color: var(--navy); font-size: 16px; }
+.reference-intro p { margin: 6px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.reference-metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.reference-metrics div { padding: 9px 10px; border: 1px solid #e4e9ee; border-radius: 10px; background: rgba(255,255,255,.78); }
+.reference-metrics span { display: block; color: var(--muted); font-size: 9px; }
+.reference-metrics strong { display: block; margin-top: 3px; color: var(--blue-strong); font-size: 19px; letter-spacing: -.04em; }
+.reference-note { grid-column: 2; color: var(--muted); font-size: 10px; line-height: 1.5; }
 .table-panel { padding-bottom: 7px; }
 .table-heading { margin-bottom: 13px; }
 .table-actions { display: flex; align-items: center; gap: 11px; }
@@ -128,6 +137,8 @@ tr.excluded td:nth-child(7) { color: var(--red); }
   .profile-title { grid-column: 1 / -1; }
   .workspace-grid, .lower-grid { grid-template-columns: 1fr; }
   .score-grid { grid-template-columns: repeat(2, 1fr); }
+  .reference-panel { grid-template-columns: 1fr; }
+  .reference-note { grid-column: 1; }
 }
 @media (max-width: 560px) {
   .topbar { padding: 0 16px; }
@@ -137,5 +148,6 @@ tr.excluded td:nth-child(7) { color: var(--red); }
   .score-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   .metric-card { padding: 13px; min-height: 108px; }
   .metric-card strong { font-size: 25px; }
+  .reference-metrics { grid-template-columns: repeat(3, 1fr); }
   .footer { width: calc(100% - 24px); display: block; line-height: 1.7; }
 }

@@ -42,7 +42,7 @@
         <span class="section-index">01</span>
         <div><strong>你的信息</strong><span>用于匹配专业和年级样本</span></div>
       </div>
-      <label>专业<input id="majorInput" value="化学工程与工艺" autocomplete="off"></label>
+      <label>专业<select id="majorInput"><option>化学工程与工艺</option><option>制药工程</option><option>能源化学工程</option><option>应用化学</option><option>其他</option></select></label>
       <label>年级<select id="gradeInput"><option>2026届</option><option>2027届</option><option>2028届</option><option>其他</option></select></label>
       <label>综合能力成绩（可选）<input id="comprehensiveInput" inputmode="decimal" placeholder="例如 88.5"></label>
     </section>
@@ -94,7 +94,7 @@
       </div>
 
       <aside class="panel rules-panel">
-        <div class="panel-heading"><div><span class="section-index">03</span><h2>计算口径</h2></div></div>
+        <div class="panel-heading"><div><span class="section-index">03</span><h2>评分规则</h2></div></div>
         <div class="rule-list">
           <div><span>计入课程</span><strong>必修、实践、实践环节</strong></div>
           <div><span>课外实践</span><strong>仅非选修归属计入</strong></div>
@@ -112,9 +112,24 @@
       <div class="metric-card"><span>样本内估计排名</span><strong id="rankScore">—</strong><small id="rankSummary">等待匿名样本</small></div>
     </section>
 
+    <section class="panel reference-panel">
+      <div class="reference-intro">
+        <span class="section-index">04</span>
+        <div><h2>本年度学院参考分布</h2><p>你提供的 46 个保研成绩样本，暂未按专业拆分。</p></div>
+      </div>
+      <div class="reference-metrics">
+        <div><span>样本数</span><strong id="referenceCount">46</strong></div>
+        <div><span>最高分</span><strong id="referenceMax">88.81</strong></div>
+        <div><span>第 10 名</span><strong id="referenceTop10">82.72</strong></div>
+        <div><span>中位数</span><strong id="referenceMedian">80.29</strong></div>
+        <div><span>最后一名</span><strong id="referenceMin">78.24</strong></div>
+      </div>
+      <div class="reference-note">这组数据适合判断学院整体竞争区间；要估计某个专业的排名，还需要继续收集带专业标签的样本。</div>
+    </section>
+
     <section class="panel table-panel">
       <div class="panel-heading table-heading">
-        <div><span class="section-index">04</span><h2>逐门课程核对</h2></div>
+        <div><span class="section-index">05</span><h2>逐门课程核对</h2></div>
         <div class="table-actions"><button id="exportCoursesButton" class="ghost-button">导出课程 CSV</button><span id="courseCount" class="muted">0 门课程</span></div>
       </div>
       <div class="table-wrap">
@@ -127,7 +142,7 @@
 
     <section class="lower-grid">
       <div class="panel sample-panel">
-        <div class="panel-heading"><div><span class="section-index">05</span><h2>排名参考</h2></div><span class="muted">同专业、同年级</span></div>
+        <div class="panel-heading"><div><span class="section-index">06</span><h2>排名参考</h2></div><span class="muted">同专业、同年级</span></div>
         <p class="panel-copy">导入匿名历史样本，或把当前结果加入样本池，查看自己的相对位置。</p>
         <div class="button-row">
           <label class="file-button ghost-button" for="sampleFile">导入匿名样本<input id="sampleFile" type="file" accept=".csv,.tsv,.txt"></label>

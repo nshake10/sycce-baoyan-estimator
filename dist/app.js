@@ -3,6 +3,7 @@
 
   const RULES = { excellent: 95, good: 85, medium: 75, pass: 75 };
   const INCLUDED_NATURES = new Set(['必修', '实践', '实践环节']);
+  const REFERENCE_SCORES = [88.81,87.48,87.08,85.33,84.47,84.33,82.95,82.90,82.79,82.72,81.86,81.69,81.66,81.44,81.25,81.07,80.83,80.77,80.76,80.58,80.49,80.47,80.40,80.18,80.03,79.99,79.67,79.55,79.53,79.37,79.33,79.10,79.07,78.90,78.80,78.73,78.67,78.59,78.57,78.56,78.54,78.53,78.41,78.40,78.38,78.24];
   const state = { courses: [], samples: loadSamples(), rules: { ...RULES } };
   const $ = (id) => document.getElementById(id);
 
@@ -136,6 +137,17 @@
       });
     }
     renderRank(result);
+    renderReference();
+  }
+
+  function renderReference() {
+    const scores = REFERENCE_SCORES;
+    const middle = (scores[(scores.length / 2) - 1] + scores[scores.length / 2]) / 2;
+    $('referenceCount').textContent = String(scores.length);
+    $('referenceMax').textContent = scores[0].toFixed(2);
+    $('referenceTop10').textContent = scores[9].toFixed(2);
+    $('referenceMedian').textContent = middle.toFixed(2);
+    $('referenceMin').textContent = scores[scores.length - 1].toFixed(2);
   }
 
   function renderRank(result) {
