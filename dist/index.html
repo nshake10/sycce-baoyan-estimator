@@ -58,8 +58,8 @@
           <button class="tab-button" data-tab="manual" role="tab">手动新增</button>
         </div>
         <div class="tab-panel active" data-panel="paste">
-          <label class="field-label" for="pasteInput">把教务系统表格直接粘贴到这里</label>
-          <textarea id="pasteInput" rows="9" placeholder="支持制表符分隔的成绩表。至少包含：课程名称、课程性质、学分、成绩。\n\n示例：\n学年\t学期\t课程名称\t课程性质\t课程归属\t学分\t实验成绩\t成绩\n2025-2026\t1\t化工原理Ⅱ\t必修\t\t3\t\t97"></textarea>
+          <label class="field-label" for="pasteInput">把教务系统表格直接粘贴到这里 <span class="paste-hint">有无表头均可</span></label>
+          <textarea id="pasteInput" rows="9" placeholder="支持直接复制教务系统原始行，保留制表符即可；有表头或无表头都能识别。\n\n无表头示例：\n2023-2024\t1\t0410011101\t大学体育Ⅰ\t必修\t\t1.0\t2.5\t62\t\t80\t\t73\t0\t\t\t体育部\t\t0\tCollege Physical EducationⅠ"></textarea>
           <div class="button-row">
             <button id="parsePasteButton" class="primary-button">解析并计算</button>
             <button id="loadDemoButton" class="ghost-button">加载示例</button>

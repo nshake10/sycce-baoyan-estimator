@@ -56,6 +56,19 @@
     const delimiter = lines[0].includes('\t') ? '\t' : (lines[0].includes(',') ? ',' : null);
     if (!delimiter) throw new Error('没有识别到制表符或逗号分隔。请直接从教务系统复制表格。');
     const rawHeaders = lines[0].split(delimiter).map(clean);
+    const looksLikeHeader = rawHeaders.some((header) => ['课程名称', '课程代码', '课程性质', '学分', '成绩'].includes(header));
+    // 教务系统常见的复制结果没有表头，但列顺序固定为：
+    // 学年、学期、课程代码、课程名称、课程性质、课程归属、学分、绩点、平时、期中、期末、实验成绩、成绩……
+    if (delimiter === '\t' && !looksLikeHeader && rawHeaders.length >= 13 && /^\d{4}-\d{4}$/.test(rawHeaders[0])) {
+      return lines.map((line) => {
+        const cols = line.split('\t');
+        return {
+          year: numberOrText(cols[0]), term: numberOrText(cols[1]), code: numberOrText(cols[2]), name: clean(cols[3]),
+          nature: clean(cols[4]), category: clean(cols[5]), credits: numeric(cols[6]) || 0,
+          score: numberOrText(cols[12]), labScore: numberOrText(cols[11]),
+        };
+      }).filter((course) => course.name || course.credits || course.score);
+    }
     const aliases = {
       year: ['学年', '年份', '年级'], term: ['学期', '学期号'], code: ['课程代码', '课程编号', '代码'],
       name: ['课程名称', '课程名', '科目'], nature: ['课程性质', '性质'], category: ['课程归属', '课程类别', '归属'],
