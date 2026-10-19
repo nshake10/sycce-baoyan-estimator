@@ -144,13 +144,14 @@
   function renderReference(result) {
     const scores = REFERENCE_SCORES;
     const sorted = [...scores].sort((a, b) => b - a);
-    const externalScores = scores.slice(0, EXTERNAL_COUNT);
+    const middle = (sorted[(sorted.length / 2) - 1] + sorted[sorted.length / 2]) / 2;
     const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
     $('referenceCount').textContent = String(scores.length);
     $('referenceExternal').textContent = String(EXTERNAL_COUNT);
     $('referenceRate').textContent = `${(EXTERNAL_COUNT / scores.length * 100).toFixed(1)}%`;
     $('referenceMean').textContent = mean.toFixed(2);
-    $('referenceExternalMin').textContent = Math.min(...externalScores).toFixed(2);
+    $('referenceMedian').textContent = middle.toFixed(2);
+    $('referenceTop10').textContent = sorted[9].toFixed(2);
     const referenceRank = result.average === null ? null : 1 + sorted.filter((score) => score > result.average).length;
     if (referenceRank === null) {
       $('referenceRank').textContent = '导入成绩后显示全院参考位置';
