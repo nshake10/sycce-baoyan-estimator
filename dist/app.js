@@ -15,6 +15,7 @@
     const n = Number(value);
     return Number.isFinite(n) ? n : null;
   }
+  function formatScore(value) { return (Math.round((Number(value) + Number.EPSILON) * 100) / 100).toFixed(2); }
   function isIncluded(course) {
     const nature = clean(course.nature);
     const category = clean(course.category);
@@ -149,16 +150,16 @@
     $('referenceCount').textContent = String(scores.length);
     $('referenceExternal').textContent = String(EXTERNAL_COUNT);
     $('referenceRate').textContent = `${(EXTERNAL_COUNT / scores.length * 100).toFixed(1)}%`;
-    $('referenceMean').textContent = mean.toFixed(2);
-    $('referenceMedian').textContent = middle.toFixed(2);
-    $('referenceTop10').textContent = sorted[9].toFixed(2);
+    $('referenceMean').textContent = formatScore(mean);
+    $('referenceMedian').textContent = formatScore(middle);
+    $('referenceTop10').textContent = formatScore(sorted[9]);
     const referenceRank = result.average === null ? null : 1 + sorted.filter((score) => score > result.average).length;
     if (referenceRank === null) {
       $('referenceRank').textContent = '导入成绩后显示全院参考位置';
       $('referenceRankSummary').textContent = '按当前成绩口径与全院样本比较';
     } else if (referenceRank > scores.length) {
       $('referenceRank').textContent = `低于本批样本区间`;
-      $('referenceRankSummary').textContent = `样本最低分 ${sorted[sorted.length - 1].toFixed(2)}`;
+      $('referenceRankSummary').textContent = `样本最低分 ${formatScore(sorted[sorted.length - 1])}`;
     } else {
       $('referenceRank').textContent = `约第 ${referenceRank} / ${scores.length}`;
       $('referenceRankSummary').textContent = `样本内位置 · 仅供参考`;
